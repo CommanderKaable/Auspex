@@ -3,8 +3,6 @@
 "use strict";
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const CACHE = "auspex-v2";
-const SHELL = ["./", "index.html", "css/styles.css", "css/desktop.css", "js/app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"]; 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function d6(){ const a = new Uint8Array(1); do { crypto.getRandomValues(a); } while (a[0] >= 252); return a[0] % 6 + 1; }
 const rollN = n => Array.from({length: Math.max(0, n)}, d6);
@@ -207,7 +205,7 @@ function tile(u){
 }
 function sideBlock(s){
   const us = G.units.filter(u => u.side === s);
-  return `<section class="side"><div class="side-head s${s}"><h2>${SIDES[s]}</h2><span class="muted num">${ready(s).length} ready · ${reforgedCount(s)}/3 reforged</span></div>
+  return `<section class="side side-${s}"><div class="side-head s${s}"><h2>${SIDES[s]}</h2><span class="muted num">${ready(s).length} ready · ${reforgedCount(s)}/3 reforged</span></div>
     <div class="tiles">${us.map(tile).join("")}</div></section>`;
 }
 const kills = s => G.units.filter(u => u.side === 1 - s && u.status === "dead").length;
@@ -265,8 +263,10 @@ function scoreboard(){
     <div class="sb-sides">${side(0)}${side(1)}</div>
   </section>`;
 }
+const DESK = "(min-width: 1100px) and (min-aspect-ratio: 3/2)";
+const isDesk = () => matchMedia(DESK).matches;
 function renderBattle(){
-  let h = scoreboard();
+  let h = scoreboard() + `<div class="bcol bcol-top">`;
   if (G.winner != null) h += `<div class="banner win"><span class="big">${winText()}</span>${M().vp ? `<p>Final score: Red ${G.vp[0]} – Green ${G.vp[1]} VP.</p>` : ""}<button class="btn primary block" data-a="openSetup">New game</button></div>`;
   else if (G.act){ const u = U(G.act.id); h += `<div class="banner s${u.side}"><span class="big">${nm(u)}</span><p>Activation in progress.</p><button class="btn ${u.side ? "green" : "red"} block" data-a="resume">Continue</button></div>`; }
   else if (!G.started && needsScoring()){
@@ -277,15 +277,17 @@ function renderBattle(){
     const s = G.turn, alone = !ready(1 - s).length;
     h += `<div class="banner s${s}"><p>Tap a highlighted ${SIDES[s]} unit to activate it.${alone && ready(s).length > 1 ? ` ${SIDES[1 - s]} is out of ready units, so ${SIDES[s]} goes again.` : ""}</p></div>`;
   }
+  h += `</div>`;
   const first = G.started ? G.turn : 0;
   h += sideBlock(first) + sideBlock(1 - first);
+  h += `<div class="bcol bcol-bot">`;
   const cnt = s => G.units.filter(u => u.side === s).length;
   h += `<div class="card"><h3>Units per side</h3>
     <div class="field"><span class="lab" style="color:var(--red)">Red</span>${stepper("cnt0", cnt(0), "red units")}</div>
     <div class="field"><span class="lab" style="color:var(--green)">Green</span>${stepper("cnt1", cnt(1), "green units")}</div>
     <p class="muted" style="margin:0;font-size:.9rem">Adding puts a new unit in reserves. Removing takes away the highest number.</p></div>`;
   if (G.started && !G.act && G.winner == null) h += `<button class="btn block" data-a="askRound">${M().vp ? "End this round" : "New round: ready all units"}</button>`;
-  h += `<details class="card"><summary>Battle log</summary><div class="log">${G.log.slice().reverse().slice(0, 80).map(e => `<div class="s${e.s}"><span class="r num">R${e.r}</span><span>${esc(e.t)}</span></div>`).join("") || '<p class="muted">Nothing yet.</p>'}</div></details>`;
+  h += `<details class="card logcard" ${isDesk() ? "open" : ""}><summary>Battle log</summary><div class="log">${G.log.slice().reverse().slice(0, 80).map(e => `<div class="s${e.s}"><span class="r num">R${e.r}</span><span>${esc(e.t)}</span></div>`).join("") || '<p class="muted">Nothing yet.</p>'}</div></details></div>`;
   return h;
 }
 
@@ -488,6 +490,7 @@ function confirmSheet(){ const C = UI.confirm; return shell(C.title, null, `<p s
 /* ---------- render root ---------- */
 function render(){
   renderTop();
+  $("#main").dataset.tab = UI.tab;
   $("#main").innerHTML = {battle: renderBattle, dice: renderDice, mission: renderMission, rules: renderRules}[UI.tab]();
   const map = {unit: unitSheet, act: () => G.act ? actSheet() : "", cap: () => UI.cap ? capSheet() : "", setup: setupSheet, confirm: () => UI.confirm ? confirmSheet() : ""};
   const sh = $("#sheet"); const old = sh.querySelector(".sh-body"); const top = old ? old.scrollTop : 0;
@@ -610,6 +613,7 @@ document.addEventListener("change", e => {
 document.addEventListener("keydown", e => { if (e.key === "Escape" && UI.sheet) A.close(); });
 
 /* ---------- boot ---------- */
+matchMedia(DESK).addEventListener?.("change", () => render());
 function curTheme(){ const t = document.documentElement.dataset.theme; return t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
 function start(data){
   try { const t = localStorage.getItem("reforged-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
