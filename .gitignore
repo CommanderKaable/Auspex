@@ -1,0 +1,10 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Local tooling (none needed to run the site)
+node_modules/
+*.log
