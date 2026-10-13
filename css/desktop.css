@@ -1,0 +1,104 @@
+/*
+ * Auspex: Battle Ledger — desktop dashboard layout.
+ * Loaded only on wide landscape screens (see the media attribute in index.html):
+ *   (min-width: 1100px) and (min-aspect-ratio: 3/2)
+ * The phone design in styles.css is unchanged; this file only rearranges it.
+ * Layout: header across the top, tab rail on the left, battle as three fixed columns
+ * (Red | command column | Green). The page never scrolls; long panels scroll inside themselves.
+ */
+:root{--top-h:64px; --rail:96px}
+html,body{height:100%;overflow:hidden}
+:root{padding:0}
+
+/* Header and tab rail */
+.top{position:fixed;top:0;left:0;right:0;height:var(--top-h)}
+.top-in{max-width:none;height:var(--top-h);padding:0 24px 0 calc(var(--rail) + 24px)}
+.brand{font-size:1.5rem;letter-spacing:.14em}
+.rnd{font-size:1.2rem}
+.tabs{top:var(--top-h);bottom:0;left:0;right:auto;width:var(--rail);border-top:0;border-right:1px solid var(--line);padding:0}
+.tabs-in{grid-template-columns:1fr;grid-auto-rows:88px;height:auto;max-width:none;padding-top:10px}
+.tab{gap:6px;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase}
+.tab svg{width:26px;height:26px}
+.tab[aria-current="page"]{box-shadow:inset 3px 0 0 var(--accent);background:var(--accent-soft)}
+
+/* Main area fills the space between header and rail */
+main{position:fixed;top:var(--top-h);left:var(--rail);right:0;bottom:0;max-width:none;margin:0;padding:20px 24px;overflow:auto}
+
+/* ---------- Battle dashboard ---------- */
+main[data-tab="battle"]{display:grid;grid-template-columns:minmax(0,1fr) clamp(420px,34vw,620px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:18px;overflow:hidden}
+main[data-tab="battle"] .bcol{display:flex;flex-direction:column;gap:14px;min-height:0;grid-column:2}
+main[data-tab="battle"] .bcol-top{grid-row:2;overflow:auto}
+main[data-tab="battle"] .bcol-bot{grid-row:3;overflow:auto;max-height:26vh}
+main[data-tab="battle"] .side{grid-row:2 / -1;min-height:0;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;gap:14px}
+main[data-tab="battle"] .side-0{grid-column:1;border-top:5px solid var(--red)}
+main[data-tab="battle"] .side-1{grid-column:3;border-top:5px solid var(--green)}
+main[data-tab="battle"] .side-head h2{font-size:2.2rem}
+main[data-tab="battle"] .tiles{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+main[data-tab="battle"] .side-head{flex-wrap:wrap}
+main[data-tab="battle"] .bcol-bot > .card:not(.logcard) p.muted{display:none}
+main[data-tab="battle"] .bcol-bot > .card:not(.logcard){flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:10px 14px}
+main[data-tab="battle"] .bcol-bot > .card:not(.logcard) h3{flex-basis:100%;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+main[data-tab="battle"] .bcol-bot .field{flex:1 1 0;min-height:44px}
+main[data-tab="battle"] .bcol-bot .stepper button{width:44px;height:44px}
+main[data-tab="battle"] .tile .n{font-size:2.7rem}
+main[data-tab="battle"] .tile .st{font-size:.78rem}
+.logcard{flex:0 0 auto}
+.banner .big{font-size:2.2rem}
+/* Scoreboard becomes a full-width strip across the top of the board */
+main[data-tab="battle"] .scoreboard{grid-column:1 / -1;grid-row:1;grid-template-columns:auto minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto auto auto;gap:4px 22px;padding:12px 20px}
+main[data-tab="battle"] .sb-round{grid-row:1 / span 3}
+main[data-tab="battle"] .sb-state,main[data-tab="battle"] .sb-prog,main[data-tab="battle"] .sb-init{grid-column:2}
+main[data-tab="battle"] .sb-state{font-size:1.8rem}
+main[data-tab="battle"] .sb-sides{grid-column:3;grid-row:1 / span 3}
+main[data-tab="battle"] .sb-side{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"name vp step" "ref lab step";gap:0 14px;padding:10px 14px}
+main[data-tab="battle"] .sb-side .sb-lab{justify-self:end}
+main[data-tab="battle"] .sb-side .stepper{flex-direction:row}
+main[data-tab="battle"] .sb-vp{font-size:2.8rem;justify-self:end}
+.sb-rnum{font-size:3.6rem}
+/* Scoring card: objectives in two columns */
+.banner:has(.ctlrow){display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.banner:has(.ctlrow) > :not(.ctlrow){grid-column:1 / -1}
+.banner:has(.ctlrow) .ctlrow{flex-direction:column;align-items:stretch}
+.banner:has(.ctlrow) .ctlrow .seg{min-width:0}
+
+/* ---------- Dice: two columns ---------- */
+main[data-tab="dice"]{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);grid-template-rows:auto 1fr;align-content:start;gap:18px}
+main[data-tab="dice"] > :nth-child(1){grid-column:1;grid-row:1}
+main[data-tab="dice"] > :nth-child(2){grid-column:1;grid-row:2;align-self:start}
+main[data-tab="dice"] > :nth-child(3){grid-column:2;grid-row:1 / span 2;max-height:calc(100vh - var(--top-h) - 40px);overflow:auto}
+
+/* ---------- Mission: map and details left, status right ---------- */
+main[data-tab="mission"]{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-auto-rows:min-content;align-content:start;gap:18px}
+main[data-tab="mission"] > :first-child{grid-column:1;grid-row:1 / span 12;max-height:calc(100vh - var(--top-h) - 40px);overflow:auto}
+main[data-tab="mission"] > :not(:first-child){grid-column:2}
+main[data-tab="mission"] .map{max-height:44vh}
+
+/* ---------- Rules: newspaper columns ---------- */
+main[data-tab="rules"]{display:block;columns:3 340px;column-gap:18px}
+main[data-tab="rules"] > details{break-inside:avoid;margin-bottom:18px}
+
+/* ---------- Sheets become a right-hand drawer, so the board stays visible ---------- */
+.wrap{justify-content:flex-end;align-items:stretch;background:rgba(6,9,8,.35)}
+.sheet{width:40vw;min-width:460px;max-width:600px;max-height:none;height:100%;border-radius:20px 0 0 20px;border-left:1px solid var(--line)}
+.toast{bottom:24px;left:calc(50% + var(--rail) / 2)}
+
+/* Pointer feedback */
+@media (hover: hover){
+  .btn:hover,.icon-btn:hover,.mpick:hover{filter:brightness(1.06)}
+  .tile:hover{filter:brightness(1.08)}
+  .tab:hover{color:var(--fg)}
+}
+
+/* Shorter laptop screens: tighten the command column */
+@media (max-height: 820px){
+  :root{--top-h:56px}
+  main{padding:14px 18px}
+  main[data-tab="battle"]{gap:14px}
+  .sb-rnum{font-size:3rem}
+  main[data-tab="battle"] .sb-vp{font-size:2.2rem}
+  main[data-tab="battle"] .sb-state{font-size:1.4rem}
+  .scoreboard{padding:10px 12px;gap:4px 12px}
+  .banner{padding:12px;gap:8px}
+  .banner .big{font-size:1.7rem}
+  .ctlrow .seg button{min-height:40px}
+}
