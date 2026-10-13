@@ -4,8 +4,6 @@
 
 One shared phone, tablet or laptop does the bookkeeping. You keep the miniatures, tape measure and line of sight on the table.
 
-**Live site:** `https://<your-github-username>.github.io/<repo-name>/` (after you enable GitHub Pages, see below)
-
 ## Features
 
 - **Red vs Green, numbered units.** No army lists to type in. Set how many units each side has and play.
@@ -41,21 +39,6 @@ python3 -m http.server 8000
 
 Opening `index.html` directly from disk also works, but offline caching only runs over `http://localhost` or `https://`.
 
-## Publish with GitHub Pages
-
-1. Create a new repository on GitHub (for example `auspex`).
-2. Push this folder to it:
-   ```bash
-   git remote add origin https://github.com/<your-github-username>/auspex.git
-   git branch -M main
-   git push -u origin main
-   ```
-3. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, then choose branch `main` and folder `/ (root)`. Save.
-4. After a minute the site is live at `https://<your-github-username>.github.io/auspex/`.
-5. On your phone, open the link and use **Add to Home Screen** to get an app icon.
-
-The empty `.nojekyll` file tells GitHub Pages to serve the files as they are, without Jekyll processing.
-
 ### Updating
 
 When you change any file, also bump `CACHE` in `sw.js` (e.g. `auspex-v1` → `auspex-v2`). This makes installed copies pick up the new version. Phones may need the app closed and reopened once.
@@ -67,17 +50,13 @@ index.html             Page shell: header, main area, tab bar, sheet container
 css/styles.css         All styling: colour tokens for light/dark, layout, controls
 js/app.js              All logic: game state, rules helpers, missions, rendering, actions
 sw.js                  Service worker for offline use
-manifest.webmanifest   Install-to-home-screen metadata
 icons/                 App icons (SVG + PNG)
-docs/MISSIONS.md       The five missions in full
-docs/ARCHITECTURE.md   How the code is organised and how to extend it
+MISSIONS.md       The five missions in full
 ```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before making bigger changes.
 
 ## Data and privacy
 
-Everything stays on the device. The game is saved in `localStorage` (keys `reforged-companion-v2` and `reforged-theme`). There is no server, account or tracking. The only external requests are for Google Fonts.
+Everything stays on the device. The game is saved in `localStorage`. There is no server, account or tracking. The only external requests are for Google Fonts.
 
 ## Disclaimer
 
