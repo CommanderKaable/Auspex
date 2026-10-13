@@ -1,7 +1,7 @@
 /* Offline support: cache the app shell so the companion works at the table without signal.
    Bump CACHE when you change any file so phones pick up the new version. */
-const CACHE = "auspex-v1";
-const SHELL = ["./", "index.html", "css/styles.css", "js/app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "auspex-v2";
+const SHELL = ["./", "index.html", "css/styles.css", "css/desktop.css", "js/app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
