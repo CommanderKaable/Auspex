@@ -3,6 +3,8 @@
 "use strict";
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CACHE = "auspex-v2";
+const SHELL = ["./", "index.html", "css/styles.css", "css/desktop.css", "js/app.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"]; 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function d6(){ const a = new Uint8Array(1); do { crypto.getRandomValues(a); } while (a[0] >= 252); return a[0] % 6 + 1; }
 const rollN = n => Array.from({length: Math.max(0, n)}, d6);
